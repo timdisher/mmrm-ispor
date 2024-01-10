@@ -14,7 +14,8 @@
 !*NAMESPACE
 !*.Rbuildignore
 !*renv.lock
-
+!*.txt
 
 # Even if they are in sub-directories
 !*/
+.Rproj.user

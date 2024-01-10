@@ -1,0 +1,41 @@
+model {
+  # Priors
+  
+  for (i in 1:num_timepoints) {
+    mu[i] ~ dnorm(0, 0.001)
+    sd.imp[i] ~ dnorm(0, 1)
+  }
+  
+  for(k in 1:num_trials){
+    for(i in 1:num_timepoints){
+      sd[k,i] ~ dnorm(mu_sd[k,i], 1)
+      log(mu_sd[k,i]) <- sd.imp[i]
+    }
+  }
+
+  
+  
+  # Inverse of sigma
+  
+  # Likelihood
+  for (j in 1:num_trials) {
+    y[j, 1:num_timepoints] ~ dmnorm(mu[1:num_timepoints], prec[j,,])
+  }
+
+  # Derived quantities
+
+   # Create a diagonal matrix with standard deviations on the diagonal
+    for(k in 1:num_trials){
+      for (i in 1:num_timepoints) {
+        for (j in 1:num_timepoints) {
+      var_cov_matrix[k,i, j] <- sd[k,i] * sd[k, j] * (step(i - j) * step(j - i + 1) + R[i, j] * (1 - step(i - j) * step(j - i + 1)))
+        }
+      }
+     prec[k,1:num_timepoints, 1:num_timepoints] <- inverse(var_cov_matrix[k,1:num_timepoints, 1:num_timepoints])
+    }
+  
+ 
+    
+
+  
+}
